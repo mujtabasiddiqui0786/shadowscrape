@@ -1,0 +1,7 @@
+.venv/
+.venv-bench/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+REDDIT_POST.md
+SPEC.md

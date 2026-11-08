@@ -1,0 +1,14 @@
+site_name: shadowscrape
+site_description: Python web scraping framework with TLS impersonation, stealth browsers, adaptive parsing and resumable crawls.
+repo_url: https://github.com/mujtabasiddiqui0786/shadowscrape
+theme:
+  name: material
+nav:
+  - Home: index.md
+  - Quickstart: quickstart.md
+  - Fetching: fetching.md
+  - Parsing: parsing.md
+  - Spiders: spiders.md
+  - Stealth: stealth.md
+  - CLI: cli.md
+  - MCP server: mcp.md
