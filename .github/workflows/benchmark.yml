@@ -15,6 +15,7 @@ jobs:
           python-version: "3.12"
       - run: pip install -e ".[stealth]"
       - run: python -m playwright install --with-deps chromium
+      - run: python -m patchright install chromium
       - name: Run headful under Xvfb (strongest mode)
         run: xvfb-run -a python -m benchmarks.detectors --engines playwright stealthy --repeat 3 --headful
       - uses: actions/upload-artifact@v4

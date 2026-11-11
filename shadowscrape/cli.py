@@ -332,13 +332,20 @@ def _cmd_extract(args: argparse.Namespace) -> int:
 
 
 def _cmd_install(args: argparse.Namespace) -> int:
-    cmd = [sys.executable, "-m", "playwright", "install", "chromium"]
-    if args.with_deps:
-        cmd.append("--with-deps")
-    if args.force:
-        cmd.append("--force")
-    print("running: " + " ".join(cmd))
-    return subprocess.call(cmd)
+    # playwright and patchright each download their own Chromium build, so install for every backend present.
+    import importlib.util
+
+    backends = [name for name in ("playwright", "patchright") if importlib.util.find_spec(name)] or ["playwright"]
+    code = 0
+    for backend in backends:
+        cmd = [sys.executable, "-m", backend, "install", "chromium"]
+        if args.with_deps:
+            cmd.append("--with-deps")
+        if args.force:
+            cmd.append("--force")
+        print("running: " + " ".join(cmd))
+        code = subprocess.call(cmd) or code
+    return code
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:

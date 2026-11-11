@@ -6,7 +6,7 @@ A Python web scraping framework: fast HTTP with browser TLS impersonation, steal
 pip install -e .                 # core: parser, HTTP fetchers, spiders, CLI
 pip install -e ".[stealth]"      # + Playwright/patchright stealth browsers
 pip install -e ".[all]"          # + MCP + IPython shell
-python -m playwright install chromium
+shadowscrape install        # downloads Chromium for playwright and patchright
 ```
 
 Python 3.9+. The MCP server is a built-in JSON-RPC implementation, so it also works on Python 3.9, where the official `mcp` SDK doesn't install.

@@ -1,6 +1,6 @@
 """Render a JavaScript page in a stealth browser and capture the background API calls it makes.
 
-Needs: pip install -e ".[stealth]" and python -m playwright install chromium
+Needs: pip install -e ".[stealth]" and shadowscrape install
 """
 from __future__ import annotations
 

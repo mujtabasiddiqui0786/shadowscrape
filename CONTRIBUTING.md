@@ -9,7 +9,7 @@ git clone https://github.com/mujtabasiddiqui0786/shadowscrape.git
 cd shadowscrape
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e ".[stealth]" pytest
-python -m playwright install chromium
+shadowscrape install        # Chromium for playwright and patchright
 ```
 
 ## Run the tests

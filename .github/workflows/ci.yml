@@ -31,4 +31,5 @@ jobs:
           python-version: "3.12"
       - run: pip install -e ".[stealth]" pytest
       - run: python -m playwright install --with-deps chromium
+      - run: python -m patchright install chromium
       - run: python -m pytest -q

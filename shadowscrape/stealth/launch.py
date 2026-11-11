@@ -16,6 +16,7 @@ import os
 import re
 import tempfile
 import urllib.request
+import warnings
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional, Tuple
 from urllib.parse import unquote, urlparse
@@ -65,6 +66,24 @@ def get_backend(prefer: str = "auto") -> Tuple[str, Any, Any]:
         except ImportError as e:  # pragma: no cover - depends on env
             last = e
     raise RuntimeError("No browser backend available (pip install 'shadowscrape[browser]'): %s" % last)
+
+
+def _can_fall_back(cfg: "StealthConfig", backend: str, exc: Exception) -> bool:
+    """True when patchright was auto-picked but its own Chromium build isn't installed.
+
+    patchright and playwright each download their own browser build (``patchright install`` vs
+    ``playwright install``), so having only one of them installed is a common setup.
+    """
+    return cfg.backend == "auto" and backend == "patchright" and "Executable doesn't exist" in str(exc)
+
+
+def _warn_fallback() -> None:
+    warnings.warn(
+        "patchright's Chromium is not installed, falling back to plain Playwright (weaker CDP-leak "
+        "protection). Run `python -m patchright install chromium` (or `shadowscrape install`) to use patchright.",
+        RuntimeWarning,
+        stacklevel=3,
+    )
 
 
 def normalize_proxy(proxy: Any) -> Optional[Dict[str, str]]:
@@ -376,7 +395,16 @@ def start_stealth_context_sync(cfg: StealthConfig) -> Tuple[Any, Any, Profile, s
         udd = tmp
     pw = sync_api.sync_playwright().start()
     try:
-        ctx = pw.chromium.launch_persistent_context(udd, **build_context_options(cfg, profile, backend=backend))
+        try:
+            ctx = pw.chromium.launch_persistent_context(udd, **build_context_options(cfg, profile, backend=backend))
+        except Exception as e:
+            if not _can_fall_back(cfg, backend, e):
+                raise
+            pw.stop()
+            _warn_fallback()
+            backend, sync_api, _ = get_backend("playwright")
+            pw = sync_api.sync_playwright().start()
+            ctx = pw.chromium.launch_persistent_context(udd, **build_context_options(cfg, profile, backend=backend))
         first = ctx.pages[0] if ctx.pages else ctx.new_page()
         ver = browser_full_version_sync(ctx, first)
         if ver:
@@ -424,7 +452,16 @@ async def start_stealth_context_async(cfg: StealthConfig) -> Tuple[Any, Any, Pro
         udd = tmp
     pw = await async_api.async_playwright().start()
     try:
-        ctx = await pw.chromium.launch_persistent_context(udd, **build_context_options(cfg, profile, backend=backend))
+        try:
+            ctx = await pw.chromium.launch_persistent_context(udd, **build_context_options(cfg, profile, backend=backend))
+        except Exception as e:
+            if not _can_fall_back(cfg, backend, e):
+                raise
+            await pw.stop()
+            _warn_fallback()
+            backend, _, async_api = get_backend("playwright")
+            pw = await async_api.async_playwright().start()
+            ctx = await pw.chromium.launch_persistent_context(udd, **build_context_options(cfg, profile, backend=backend))
         first = ctx.pages[0] if ctx.pages else await ctx.new_page()
         ver = await browser_full_version_async(ctx, first)
         if ver:

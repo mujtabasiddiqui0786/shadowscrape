@@ -2,7 +2,7 @@
 
 ```bash
 pip install -e ".[stealth]"
-python -m playwright install chromium
+shadowscrape install        # downloads Chromium for playwright and patchright
 ```
 
 ```python

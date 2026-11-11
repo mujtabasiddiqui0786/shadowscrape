@@ -10,6 +10,10 @@ The detector benchmark (`python -m benchmarks.detectors`) runs plain Playwright 
 
 On ScrapingCourse's Cloudflare challenge page (published for scraper testing), plain Playwright stayed stuck on the interstitial and shadowscrape passed. On NopeCHA's Cloudflare demo both were hard-blocked. These were single runs from one IP, so treat them as a data point, not a reliability figure. Reproduce with `python -m benchmarks.permitted_targets`.
 
+## Backends and the fallback
+
+The stealth fetchers use `patchright` when it is installed and fall back to plain `playwright` if patchright's Chromium build is missing (`patchright install chromium`, which `shadowscrape install` runs for you). The fallback warns at launch. It has weaker protection against CDP-based detection, and HTTP-served workers report only the browser's own `navigator.languages` instead of the profile's list. Check `session.backend_used` to see which one you got.
+
 ## What is not proven
 
 - Public detector pages test fingerprint consistency only. They do not test IP reputation, behavioural or ML scoring, or vendor JS challenges.

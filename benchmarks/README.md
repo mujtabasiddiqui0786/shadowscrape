@@ -3,7 +3,7 @@
 Reproducible comparison of **plain Playwright** and **shadowscrape Stealthy** against public bot-detector pages.
 
 ```bash
-.venv/bin/python -m playwright install chromium          # once
+.venv/bin/shadowscrape install                              # once (Chromium for playwright and patchright)
 .venv/bin/python -m benchmarks.detectors                  # every engine x every target, 1 run
 .venv/bin/python -m benchmarks.detectors --repeat 5 --engines playwright stealthy
 .venv/bin/python -m benchmarks.detectors --targets local-probe          # fully offline
