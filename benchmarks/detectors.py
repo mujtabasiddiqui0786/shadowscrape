@@ -181,7 +181,7 @@ def _version(mod: str) -> Optional[str]:
 def environment() -> Dict[str, Any]:
     return {"python": platform.python_version(), "os": "%s %s %s" % (platform.system(), platform.release(), platform.machine()),
             "playwright": _version("playwright"), "patchright": _version("patchright"),
-            "timestamp_utc": _dt.datetime.utcnow().isoformat(timespec="seconds") + "Z"}
+            "timestamp_utc": _dt.datetime.now(_dt.timezone.utc).replace(tzinfo=None).isoformat(timespec="seconds") + "Z"}
 
 
 class _LocalServer:

@@ -223,7 +223,10 @@ def stealth_probe(request, srv):  # returns (profile, probe, request_headers, in
         probe = _run_probe(s, srv.base)
         hdrs = [h for p, h in srv.log if p == "/probe.html"][0]
         info = types.SimpleNamespace(profile=s.profile, backend_used=s.backend_used)
-    return prof, probe, hdrs, info
+    # The session adapts the profile's Chrome version to the installed browser, so compare against
+    # that adapted profile; the original was built with the default version and goes stale whenever
+    # the installed Chromium differs (e.g. CI installs a newer Playwright than a pinned dev machine).
+    return info.profile, probe, hdrs, info
 
 
 @pytest.fixture(scope="module")
